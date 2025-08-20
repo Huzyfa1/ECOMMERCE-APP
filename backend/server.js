@@ -8,25 +8,40 @@ import productRouter from "./routes/productRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 
-//App Config
 const app = express();
-const port = process.env.PORT || 4000;
+
+// Connect database + cloud
 connectDB();
 connectCloudinary();
 
-//Middlewares
+// Middleware
 app.use(express.json());
-app.use(cors());
 
-//API Endpoints
+// 🟢 Step 1: Open CORS for all origins (testing / backend only)
+app.use(
+  cors({
+    origin: "*", // TEMPORARY until frontend is deployed
+    credentials: true,
+  })
+);
 
+// 🟢 Step 2 (after frontend is deployed on vercel):
+// Replace the above `app.use(cors(...))` with this:
+// app.use(cors({
+//   origin: "https://your-frontend.vercel.app",
+//   credentials: true
+// }));
+
+// API Routes
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
+// Test Route
 app.get("/", (req, res) => {
-  res.send("API Working");
+  res.send("✅ API Working on Vercel");
 });
 
-app.listen(port, () => console.log("Server started on PORT: " + port));
+// ⛔ No app.listen() needed on Vercel
+export default app;
